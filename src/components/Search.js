@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 
 function Search() {
-    const [term, setTerm] = useState('')
+    const [term, setTerm] = useState('program')
     const [results, setResults] = useState([])
 
     useEffect(() => {
@@ -20,9 +20,26 @@ function Search() {
             setResults(data.query.search)
         }
 
-        //avoid request, when initial term is an empty string
-        if (term) {
-            search()
+        // Check whether it is the first time our component rendered, if so, no throttling, search immideately
+        // First block: check user input && response.data
+        if (term && !results) {
+            search(term)
+        } else {
+            //	Firstly render:
+            // Invoke inner function + keep the reference of returned function
+            const timeoutId = setTimeout(() => {
+
+                //avoid request, when initial term is an empty string
+                if (term) {
+                    search()
+                }
+            }, 500);
+
+            //	Follow up render:
+            // Returned function invoked + inner function invoked
+            return (() => {
+                clearTimeout(timeoutId)
+            })
         }
     }, [term])
 
@@ -30,9 +47,9 @@ function Search() {
         return (
             <div key={result.pageid} className='item'>
                 <div className='right floated content'>
-                    <a 
-                    href={`https://en.wikipedia.org?curid=${result.pageid}`}
-                    className='ui button'
+                    <a
+                        href={`https://en.wikipedia.org?curid=${result.pageid}`}
+                        className='ui button'
                     >
                         Go
                     </a>
