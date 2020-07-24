@@ -3,7 +3,18 @@ import axios from 'axios'
 
 function Search() {
     const [term, setTerm] = useState('program')
+    const [debouncedTerm, setDebouncedTerm] = useState(term)
     const [results, setResults] = useState([])
+
+    useEffect(() => {
+        const timerId = setTimeout(() => {
+            setDebouncedTerm(term)
+        }, 1000);
+
+        return () => {
+            clearTimeout(timerId)
+        }
+    }, [term])
 
     useEffect(() => {
         const search = async () => {
@@ -14,34 +25,52 @@ function Search() {
                     list: 'search',
                     origin: '*',
                     format: 'json',
-                    srsearch: term
+                    srsearch: debouncedTerm
                 }
             })
             setResults(data.query.search)
         }
+        search()
+    }, [debouncedTerm])
 
-        // Check whether it is the first time our component rendered, if so, no throttling, search immideately
-        // First block: check user input && response.data
-        if (term && !results) {
-            search(term)
-        } else {
-            //	Firstly render:
-            // Invoke inner function + keep the reference of returned function
-            const timeoutId = setTimeout(() => {
+    // useEffect(() => {
+    // //throttling function
+    //     const search = async () => {
+    //         const { data } = await axios.get('https://en.wikipedia.org/w/api.php', {
+    //             //second argument: option object
+    //             params: {
+    //                 action: 'query',
+    //                 list: 'search',
+    //                 origin: '*',
+    //                 format: 'json',
+    //                 srsearch: term
+    //             }
+    //         })
+    //         setResults(data.query.search)
+    //     }
 
-                //avoid request, when initial term is an empty string
-                if (term) {
-                    search()
-                }
-            }, 500);
+    //     // Check whether it is the first time our component rendered, if so, no throttling, search immideately
+    //     // First block: check user input && response.data
+    //     if (term && !results) {
+    //         search(term)
+    //     } else {
+    //         //	Firstly render:
+    //         // Invoke inner function + keep the reference of returned function
+    //         const timeoutId = setTimeout(() => {
 
-            //	Follow up render:
-            // Returned function invoked + inner function invoked
-            return (() => {
-                clearTimeout(timeoutId)
-            })
-        }
-    }, [term])
+    //             //avoid request, when initial term is an empty string
+    //             if (term) {
+    //                 search()
+    //             }
+    //         }, 500);
+
+    //         //	Follow up render:
+    //         // Returned function invoked + inner function invoked
+    //         return (() => {
+    //             clearTimeout(timeoutId)
+    //         })
+    //     }
+    // }, [term])
 
     const renderedResults = results.map((result) => {
         return (
