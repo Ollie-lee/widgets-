@@ -1,11 +1,22 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 
 export default function Dropdown({
     options,
     selected,
     onSelectedChange
 }) {
+    const [open, setOpen] = useState(false);
+
+    useEffect(() => {
+        document.body.addEventListener('click', (e) => {
+            console.log(e.target);
+        })
+    }, [])
+
     const renderedOptions = options.map((option) => {
+        if (option.value === selected.value) {
+            return null;
+        }
         return (
             <div
                 key={option.value}
@@ -19,15 +30,15 @@ export default function Dropdown({
 
 
     return (
-        <div className='ui form'>
+        <div className='ui form' >
             <div className='field'>
                 <label className='label'>
                     Select a color
                 </label>
-                <div className='ui selection dropdown visible active'>
+                <div onClick={() => setOpen(!open)} className={`ui selection dropdown ${open ? 'visible active' : ''}`}>
                     <i className='dropdown icon'></i>
                     <div className='text'>{selected.label}</div>
-                    <div className='menu visible transition'>
+                    <div className={`menu ${open ? 'visible transition' : ''}`}>
                         {renderedOptions}
                     </div>
                 </div>
