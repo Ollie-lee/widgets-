@@ -3,7 +3,8 @@ import React, { useState, useEffect, useRef } from 'react'
 export default function Dropdown({
     options,
     selected,
-    onSelectedChange
+    onSelectedChange,
+    label
 }) {
     const [open, setOpen] = useState(false);
     const ref = useRef()
@@ -44,7 +45,7 @@ export default function Dropdown({
         <div ref={ref} className='ui form' >
             <div className='field'>
                 <label className='label'>
-                    Select a color
+                    {label}
                 </label>
                 <div onClick={() => setOpen(!open)} className={`ui selection dropdown ${open ? 'visible active' : ''}`}>
                     <i className='dropdown icon'></i>
