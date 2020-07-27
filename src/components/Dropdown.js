@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 
 export default function Dropdown({
     options,
@@ -6,10 +6,16 @@ export default function Dropdown({
     onSelectedChange
 }) {
     const [open, setOpen] = useState(false);
+    const ref = useRef()
+
 
     useEffect(() => {
         document.body.addEventListener('click', (e) => {
-            console.log(e.target);
+            //click position is inside the ref.current
+            if (ref.current.contains(e.target)) {
+                return;
+            }
+            setOpen(false)
         })
     }, [])
 
@@ -30,7 +36,7 @@ export default function Dropdown({
 
 
     return (
-        <div className='ui form' >
+        <div ref={ref} className='ui form' >
             <div className='field'>
                 <label className='label'>
                     Select a color
