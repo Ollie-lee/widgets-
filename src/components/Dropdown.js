@@ -8,15 +8,20 @@ export default function Dropdown({
     const [open, setOpen] = useState(false);
     const ref = useRef()
 
+    const onBodyClick = (e) => {
+        //click position is inside the ref.current
+        if (ref.current.contains(e.target)) {
+            return;
+        }
+        setOpen(false)
+    }
 
     useEffect(() => {
-        document.body.addEventListener('click', (e) => {
-            //click position is inside the ref.current
-            if (ref.current.contains(e.target)) {
-                return;
-            }
-            setOpen(false)
-        })
+        document.body.addEventListener('click', onBodyClick)
+
+        return () => {
+            document.body.removeEventListener('click', onBodyClick)
+        }
     }, [])
 
     const renderedOptions = options.map((option) => {
